@@ -3104,9 +3104,9 @@
         <!-- My Chats Modal -->
         <div id="myChatsModal" class="chat-modal hidden">
             <div class="chat-modal-header">
-                <button onclick="closeMyChatsModal(); loadBrigades();" class="chat-brigade-btn" title="Открыть бригады">
+                <!-- <button onclick="closeMyChatsModal(); loadBrigades();" class="chat-brigade-btn" title="Открыть бригады">
                     <i data-feather="users" class="w-5 h-5"></i>
-                </button>
+                </button> -->
                 <h2 class="chat-modal-title" style="flex: 1;">Мои чаты</h2>
                 <button onclick="closeMyChatsModal()" class="chat-modal-close">
                     <i data-feather="x" class="w-5 h-5"></i>
@@ -3136,9 +3136,9 @@
         <!-- Chat Modal -->
         <div id="chatModal" class="chat-modal hidden">
             <div class="chat-modal-header">
-                <button onclick="closeChatModal(); loadBrigades();" class="chat-brigade-btn" title="Открыть бригады">
+                <!-- <button onclick="closeChatModal(); loadBrigades();" class="chat-brigade-btn" title="Открыть бригады">
                     <i data-feather="users" class="w-5 h-5"></i>
-                </button>
+                </button> -->
                 <div style="flex: 1;">
                     <div class="chat-modal-title" id="chatModalTitle" style="display: flex; align-items: center;">
                         <span>Чат с бригадой</span>
@@ -3879,7 +3879,7 @@
                         breadcrumbs.push(navigation.submodel.name);
                     }
 
-                    if (breadcrumbs.length > 1) { // Изменяем условие, так как у нас всегда есть "СКИДКА СЕРВИС"
+                    if (breadcrumbs.length > 1) { // Изменяем условие, так как у нас всегда есть "ЖЕЛEѦЯКА"
                         html += `<p class="breadcrumb-text text-gray-400 text-xs text-contrast">${breadcrumbs.join(' → ')}</p>`;
                     }
                 }
@@ -7783,7 +7783,7 @@
                 <div class="confirm-dialog-icon">
                     <i data-feather="alert-circle" style="color: #EF4444; width: 24px; height: 24px;"></i>
                 </div>
-                <div class="confirm-dialog-title">Скидка Сервис</div>
+                <div class="confirm-dialog-title">ЖЕЛEѦЯКА</div>
             </div>
             <div class="confirm-dialog-text" id="confirmDialogText">
                 Вы уверены, что хотите удалить этот чат? Все сообщения будут потеряны.
