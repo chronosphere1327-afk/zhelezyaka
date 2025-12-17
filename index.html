@@ -449,64 +449,6 @@
             }
         }
         
-        /* Фото при разлетании */
-        .photo-overlay {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            z-index: 10000;
-            opacity: 0;
-            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            max-width: 90vw;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        
-        .photo-overlay.show {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-        }
-        
-        .photo-image {
-            width: 100%;
-            max-width: 750px;
-            height: auto;
-            max-height: 70vh;
-            object-fit: contain;
-            animation: photoPulse 2s ease-in-out infinite;
-            background: transparent;
-            border: none;
-            outline: none;
-            display: block;
-            margin: 0 auto;
-        }
-        
-        @keyframes photoPulse {
-            0%, 100% { 
-                transform: scale(1);
-            }
-            50% { 
-                transform: scale(1.03);
-            }
-        }
-        
-        .photo-message {
-            margin-top: 30px;
-            color: #ffffff;
-            padding: 0;
-            font-size: 18px;
-            font-weight: 700;
-            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.8), 0 2px 4px rgba(0, 0, 0, 0.6);
-            background: transparent;
-        }
-        
         /* Кран */
         .crane-overlay {
             position: fixed;
@@ -6373,60 +6315,6 @@
             return quote;
         }
         
-        function showPhoto() {
-            let photoOverlay = document.getElementById('photoOverlay');
-            
-            if (!photoOverlay) {
-                photoOverlay = document.createElement('div');
-                photoOverlay.id = 'photoOverlay';
-                photoOverlay.className = 'photo-overlay';
-                
-                // Пробуем разные способы загрузки из Google Drive
-                const googleDriveId = '1Z1q8qZ-lrvkDunvuPlQ-U6z9ByFY3agQ';
-                const urls = [
-                    `https://drive.google.com/uc?export=download&id=${googleDriveId}`,
-                    `https://drive.google.com/thumbnail?id=${googleDriveId}&sz=w1000`,
-                    `https://lh3.googleusercontent.com/d/${googleDriveId}=w1000`
-                ];
-                
-                let currentUrlIndex = 0;
-                
-                photoOverlay.innerHTML = `
-                    <img class="photo-image" 
-                         src="${urls[0]}" 
-                         alt="Photo"
-                         id="photoImg">
-                    <div class="photo-message">${getNextQuote()}</div>
-                `;
-                document.body.appendChild(photoOverlay);
-                
-                // Обработчик ошибки загрузки - пробуем следующий URL
-                const img = photoOverlay.querySelector('#photoImg');
-                img.onerror = function() {
-                    currentUrlIndex++;
-                    if (currentUrlIndex < urls.length) {
-                        console.log(`Пробуем загрузить фото через URL ${currentUrlIndex + 1}`);
-                        this.src = urls[currentUrlIndex];
-                    } else {
-                        console.error('Не удалось загрузить фото ни одним способом');
-                        this.style.display = 'none';
-                        photoOverlay.querySelector('.photo-message').textContent = '📸 Фото не загрузилось. Ты куда там делся?';
-                    }
-                };
-            }
-            
-            setTimeout(() => {
-                photoOverlay.classList.add('show');
-            }, 100);
-        }
-        
-        function hidePhoto() {
-            const photoOverlay = document.getElementById('photoOverlay');
-            if (photoOverlay) {
-                photoOverlay.classList.remove('show');
-            }
-        }
-        
         function scatterElements() {
             if (isIdle) return;
             isIdle = true;
@@ -6449,18 +6337,12 @@
                 element.classList.add('idle-scatter');
             });
             
-            // Показываем фото
-            showPhoto();
-            
             console.log('💥 Элементы разлетелись - потряси телефон!');
         }
         
         function returnElements() {
             if (!isIdle) return;
             isIdle = false;
-            
-            // Прячем фото
-            hidePhoto();
             
             const scatterableElements = document.querySelectorAll('.idle-scatter');
             
