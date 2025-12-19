@@ -2039,13 +2039,13 @@
         }
 
         .product-detail-buttons {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 12px;
             margin-top: 24px;
         }
 
         .product-detail-btn {
-            flex: 1;
             padding: 14px 20px;
             border-radius: 12px;
             font-weight: 600;
@@ -2059,6 +2059,10 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             background: rgba(255, 255, 255, 0.1);
             color: white;
+        }
+        
+        .product-detail-btn-full {
+            grid-column: 1 / -1;
         }
 
         .product-detail-btn:hover {
@@ -3037,7 +3041,11 @@
                     </button>
                     <button onclick="contactAboutCurrentProduct()" class="product-detail-btn">
                         <i data-feather="message-circle" class="w-5 h-5"></i>
-                        Узнать подробнее
+                        Написать
+                    </button>
+                    <button onclick="contactAboutCheaperPrice()" class="product-detail-btn product-detail-btn-full" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-color: #10b981;">
+                        <i data-feather="trending-down" class="w-5 h-5"></i>
+                        Нашел дешевле? Жми!
                     </button>
                 </div>
             </div>
@@ -4718,7 +4726,7 @@
             currentProductDetail = null;
         }
 
-        function contactAboutCurrentProduct() {
+        async function contactAboutCurrentProduct() {
             if (!currentProductDetail) return;
             
             const navigation = getCurrentNavigation();
@@ -4734,10 +4742,101 @@
 
             const message = `Здравствуйте! Интересует товар: ${productInfo}. Подскажите подробности.`;
             
-            if (tg) {
-                tg.openTelegramLink(`https://t.me/GSValer88?text=${encodeURIComponent(message)}`);
-            } else {
-                window.open(`https://t.me/GSValer88?text=${encodeURIComponent(message)}`, '_blank');
+            // Получаем URL фото товара
+            const photoUrl = currentProductDetail.photo_url || '';
+            
+            try {
+                // Отправляем запрос через API
+                const response = await fetch(`${API_BASE}/send_product_inquiry`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: tg?.initDataUnsafe?.user?.id || 'unknown',
+                        product_info: productInfo,
+                        photo_url: photoUrl,
+                        message: message
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Показываем уведомление об успешной отправке
+                    if (tg) {
+                        tg.showAlert('✅ Ваш запрос отправлен! Администратор свяжется с вами в ближайшее время.');
+                    } else {
+                        alert('✅ Ваш запрос отправлен! Администратор свяжется с вами в ближайшее время.');
+                    }
+                } else {
+                    throw new Error('Ошибка отправки');
+                }
+            } catch (error) {
+                console.error('Ошибка отправки запроса:', error);
+                // В случае ошибки открываем обычный чат
+                if (tg) {
+                    tg.openTelegramLink(`https://t.me/GSValer88?text=${encodeURIComponent(message)}`);
+                } else {
+                    window.open(`https://t.me/GSValer88?text=${encodeURIComponent(message)}`, '_blank');
+                }
+            }
+        }
+        
+        async function contactAboutCheaperPrice() {
+            if (!currentProductDetail) return;
+            
+            const navigation = getCurrentNavigation();
+            
+            const productInfo = [
+                navigation.section?.name,
+                navigation.category?.name,
+                navigation.model?.name,
+                navigation.submodel?.name,
+                currentProductDetail.color,
+                currentProductDetail.price && currentProductDetail.price !== 'Цена не указана' ? currentProductDetail.price : ''
+            ].filter(Boolean).join(' → ');
+
+            const message = `Здравствуйте, я нашел:\n${productInfo}\nдешевле, хотел бы обсудить с вами стоимость!`;
+            
+            // Получаем URL фото товара
+            const photoUrl = currentProductDetail.photo_url || '';
+            
+            try {
+                // Отправляем запрос через API
+                const response = await fetch(`${API_BASE}/send_product_inquiry`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: tg?.initDataUnsafe?.user?.id || 'unknown',
+                        product_info: productInfo,
+                        photo_url: photoUrl,
+                        message: message
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Показываем уведомление об успешной отправке
+                    if (tg) {
+                        tg.showAlert('✅ Ваш запрос отправлен! Администратор свяжется с вами в ближайшее время.');
+                    } else {
+                        alert('✅ Ваш запрос отправлен! Администратор свяжется с вами в ближайшее время.');
+                    }
+                } else {
+                    throw new Error('Ошибка отправки');
+                }
+            } catch (error) {
+                console.error('Ошибка отправки запроса:', error);
+                // В случае ошибки открываем обычный чат
+                if (tg) {
+                    tg.openTelegramLink(`https://t.me/GSValer88?text=${encodeURIComponent(message)}`);
+                } else {
+                    window.open(`https://t.me/GSValer88?text=${encodeURIComponent(message)}`, '_blank');
+                }
             }
         }
         
