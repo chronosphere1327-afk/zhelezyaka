@@ -4718,7 +4718,7 @@
             currentProductDetail = null;
         }
 
-        async function contactAboutCurrentProduct() {
+        function contactAboutCurrentProduct() {
             if (!currentProductDetail) return;
             
             const navigation = getCurrentNavigation();
@@ -4734,44 +4734,10 @@
 
             const message = `Здравствуйте! Интересует товар: ${productInfo}. Подскажите подробности.`;
             
-            // Получаем URL фото товара
-            const photoUrl = currentProductDetail.photo_url || '';
-            
-            try {
-                // Отправляем запрос через API
-                const response = await fetch(`${API_BASE}/send_product_inquiry`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        user_id: tg?.initDataUnsafe?.user?.id || 'unknown',
-                        product_info: productInfo,
-                        photo_url: photoUrl,
-                        message: message
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    // Показываем уведомление об успешной отправке
-                    if (tg) {
-                        tg.showAlert('✅ Ваш запрос отправлен! Администратор свяжется с вами в ближайшее время.');
-                    } else {
-                        alert('✅ Ваш запрос отправлен! Администратор свяжется с вами в ближайшее время.');
-                    }
-                } else {
-                    throw new Error('Ошибка отправки');
-                }
-            } catch (error) {
-                console.error('Ошибка отправки запроса:', error);
-                // В случае ошибки открываем обычный чат
-                if (tg) {
-                    tg.openTelegramLink(`https://t.me/GSValer88?text=${encodeURIComponent(message)}`);
-                } else {
-                    window.open(`https://t.me/GSValer88?text=${encodeURIComponent(message)}`, '_blank');
-                }
+            if (tg) {
+                tg.openTelegramLink(`https://t.me/GSValer88?text=${encodeURIComponent(message)}`);
+            } else {
+                window.open(`https://t.me/GSValer88?text=${encodeURIComponent(message)}`, '_blank');
             }
         }
         
