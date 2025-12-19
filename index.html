@@ -8360,8 +8360,8 @@
         // ===== БОНУСНАЯ ПРОГРАММА =====
         
         // ID продавцов и админов (заполнить своими значениями)
-        const SELLER_IDS = [1955229007, 1445276912]; // Telegram IDs продавцов
-        const ADMIN_IDS = [7250236442]; // Telegram IDs админов
+        const SELLER_IDS = [123456789, 987654321]; // Telegram IDs продавцов
+        const ADMIN_IDS = [111111111]; // Telegram IDs админов
         
         // Текущее состояние бонусной программы
         let userBonusData = {
@@ -8499,7 +8499,16 @@
         
         // Показ QR-кода пользователя
         function showUserQRCode() {
-            const userId = userBonusData.user_id;
+            // Получаем userId из Telegram или используем userBonusData
+            const tg = window.Telegram?.WebApp;
+            const userInfo = tg?.initDataUnsafe?.user || {};
+            const userId = userInfo.id || userBonusData.user_id || 'unknown';
+            
+            // Проверяем, что userId корректный
+            if (!userId || userId === 'unknown' || userId === 'null') {
+                alert('Ошибка: не удалось определить ID пользователя');
+                return;
+            }
             
             // Генерируем QR-код
             const qrContainer = document.getElementById('qrCodeContainer');
@@ -8528,15 +8537,32 @@
         // Запуск сканера QR-кода (для продавца)
         async function startQRScanner() {
             try {
+                // Проверяем поддержку камеры
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    alert('Ваше устройство не поддерживает доступ к камере');
+                    return;
+                }
+                
                 const video = document.getElementById('qrScannerVideo');
                 
-                // Запрашиваем доступ к камере
-                qrScannerStream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: 'environment' } 
-                });
+                console.log('Запрос доступа к камере...');
                 
+                // Запрашиваем доступ к камере с запасным вариантом
+                try {
+                    qrScannerStream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { facingMode: 'environment' } 
+                    });
+                } catch (e) {
+                    // Пробуем без facingMode, если не работает
+                    console.log('Попытка с базовыми настройками камеры...');
+                    qrScannerStream = await navigator.mediaDevices.getUserMedia({ 
+                        video: true 
+                    });
+                }
+                
+                console.log('Камера получена, запуск видео...');
                 video.srcObject = qrScannerStream;
-                video.play();
+                await video.play();
                 
                 document.getElementById('qrScannerModal').classList.remove('hidden');
                 feather.replace();
@@ -8546,7 +8572,19 @@
                 
             } catch (error) {
                 console.error('Ошибка доступа к камере:', error);
-                alert('Не удалось получить доступ к камере');
+                let errorMessage = 'Не удалось получить доступ к камере. ';
+                
+                if (error.name === 'NotAllowedError') {
+                    errorMessage += 'Пожалуйста, разрешите доступ к камере в настройках браузера.';
+                } else if (error.name === 'NotFoundError') {
+                    errorMessage += 'Камера не найдена на устройстве.';
+                } else if (error.name === 'NotReadableError') {
+                    errorMessage += 'Камера используется другим приложением.';
+                } else {
+                    errorMessage += error.message;
+                }
+                
+                alert(errorMessage);
             }
         }
         
@@ -8789,5 +8827,3 @@
     </script>
 </body>
 </html>
-
-
