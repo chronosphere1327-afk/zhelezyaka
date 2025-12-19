@@ -7,7 +7,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <!-- Version: 2.5 - Message format like НАПИСАТЬ -->
+    <!-- Version: 2.6 - Fixed full product name -->
     <title>ЖЕЛЕЗЯКА Каталог</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/feather-icons"></script>
@@ -4859,11 +4859,13 @@
             const product = isFavorites ? favoriteProducts[index] : currentProducts[index];
             if (!product) return;
             
+            const navigation = getCurrentNavigation();
+            
             const productInfo = [
-                product.section,
-                product.category,
-                product.model,
-                product.submodel,
+                navigation.section?.name,
+                navigation.category?.name,
+                navigation.model?.name,
+                navigation.submodel?.name,
                 product.color,
                 product.price && product.price !== 'Цена не указана' ? product.price : ''
             ].filter(Boolean).join(' → ');
